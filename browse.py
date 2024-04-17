@@ -65,3 +65,17 @@ exit_button = tk.Button(root, text="Exit", command=exit_program)
 exit_button.pack(side=tk.TOP, padx=5, pady=5)
 
 root.mainloop()
+
+
+from datetime import datetime, timedelta
+
+# Get today's date
+today_date = datetime.now().date()
+
+# Define the time to add (9:00 AM)
+time_to_add = timedelta(hours=9)
+
+# Combine today's date with the time to add
+new_datetime = datetime.combine(today_date, datetime.min.time()) + time_to_add
+
+print("New datetime (9:00 AM):", new_datetime)
