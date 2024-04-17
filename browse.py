@@ -71,3 +71,10 @@ exit_button = tk.Button(button_frame, text="Exit", command=exit_program)
 exit_button.pack(side=tk.LEFT, padx=5)
 
 root.mainloop()
+
+from distutils.core import setup
+import py2exe
+
+setup(console=['your_script.py'])
+python setup.py py2exe
+
