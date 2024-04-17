@@ -72,9 +72,14 @@ exit_button.pack(side=tk.LEFT, padx=5)
 
 root.mainloop()
 
-from distutils.core import setup
-import py2exe
+from cx_Freeze import setup, Executable
 
-setup(console=['your_script.py'])
-python setup.py py2exe
+setup(
+    name="YourScript",
+    version="1.0",
+    description="Description of your script",
+    executables=[Executable("your_script.py")]
+)
+python setup.py build
+
 
