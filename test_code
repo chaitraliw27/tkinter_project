@@ -1,23 +1,16 @@
-import requests
 import pandas as pd
-from io import StringIO
 
-# URL of the API endpoint
-url = 'https://api.example.com/data?contentformat=csv'
+# Read the CSV file into a DataFrame
+df = pd.read_csv('your_file.csv')
 
-# Making a GET request to the endpoint
-response = requests.get(url)
+# Check if a column is empty
+empty_columns = [col for col in df.columns if df[col].isnull().all()]
 
-# Checking if the request was successful (status code 200)
-if response.status_code == 200:
-    # Assuming the response content is in CSV format
-    # Using StringIO to convert response content into file-like object
-    csv_data = StringIO(response.text)
-    
-    # Using pandas to read the CSV data directly from the file-like object
-    df = pd.read_csv(csv_data)
-    
-    # Now you can work with the DataFrame 'df' as usual
-    print(df.head())  # Example: printing the first few rows of the DataFrame
+# Delete empty columns
+if empty_columns:
+    df.drop(empty_columns, axis=1, inplace=True)
+    print("Empty column(s) deleted:", empty_columns)
 else:
-    print("Failed to fetch data from the API:", response.status_code)
+    print("No empty columns found.")
+
+# Now df contains the CSV data without empty columns
