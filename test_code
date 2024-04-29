@@ -1,16 +1,13 @@
 import pandas as pd
 
-# Read the CSV file into a DataFrame
-df = pd.read_csv('your_file.csv')
+# Assuming df1 and df2 are your DataFrames
+# Reset the index of both DataFrames
+df1.reset_index(drop=True, inplace=True)
+df2.reset_index(drop=True, inplace=True)
 
-# Check if a column is empty
-empty_columns = [col for col in df.columns if df[col].isnull().all()]
+# Compare the two DataFrames
+df_diff = df1.compare(df2)
 
-# Delete empty columns
-if empty_columns:
-    df.drop(empty_columns, axis=1, inplace=True)
-    print("Empty column(s) deleted:", empty_columns)
-else:
-    print("No empty columns found.")
-
-# Now df contains the CSV data without empty columns
+# Display the differences
+print("Differences between df1 and df2:")
+print(df_diff)
