@@ -12,19 +12,17 @@ df2 = pd.DataFrame({'name': ['John', 'Alice', 'Bob'],
 # List to store differences
 differences = []
 
-# Iterate over columns and compare content
-for col in df1.columns:
-    col_diffs = df1[col] != df2[col]
-    if col_diffs.any():
-        differences.append(f"Differences in column '{col}':")
-        for row_num, (index, value) in enumerate(col_diffs.items(), start=1):
-            if value:
-                differences.append(f"  - Row {row_num}: {df1.at[index, col]} != {df2.at[index, col]}")
+# Iterate over rows and compare content column-wise
+for index, row in df1.iterrows():
+    for col in df1.columns:
+        if row[col] != df2.at[index, col]:
+            differences.append(f"Difference at row {index + 1} in column '{col}': "
+                               f"{row[col]} != {df2.at[index, col]}")
 
 # Print differences
 if differences:
-    print("Column-wise differences found:")
+    print("Differences found:")
     for diff in differences:
         print(diff)
 else:
-    print("No column-wise differences found.")
+    print("No differences found.")
