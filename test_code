@@ -1,12 +1,26 @@
 import pandas as pd
 
-# Load CSV files into DataFrames
-df1 = pd.read_csv('file1.csv')
-df2 = pd.read_csv('file2.csv')
+# Example DataFrames
+df1 = pd.DataFrame({'node_name': ['John', 'Alice', 'Bob'],
+                    'calendar': [2022, 2023, 2024],
+                    'value': [1, 2, 3]})
 
-# Iterate over rows
-for index, (row1, row2) in enumerate(zip(df1.values, df2.values), start=1):
-    # Compare values in corresponding cells
-    for col1, col2 in zip(row1, row2):
-        if col1 != col2:
-            print(f"Difference at row {index}: {col1} != {col2}")
+df2 = pd.DataFrame({'node_name': ['John', 'Alice', 'Bob'],
+                    'calendar': [2022, 2024, 2024],  # Introducing a difference
+                    'value': [1, 2, 4]})            # Introducing a difference
+
+# Create a key by combining 'node_name' and 'calendar' columns
+df1['key'] = df1['node_name'] + df1['calendar'].astype(str)
+df2['key'] = df2['node_name'] + df2['calendar'].astype(str)
+
+# Iterate over rows of df1
+for index, row1 in df1.iterrows():
+    # Find matching row in df2 based on the key
+    matching_row_df2 = df2[df2['key'] == row1['key']]
+    if not matching_row_df2.empty:
+        matching_row_df2 = matching_row_df2.iloc[0]  # If multiple matches, take the first one
+        # Compare entire row content
+        if not row1.equals(matching_row_df2):
+            print(f"Difference found for key {row1['key']}:")
+            print(f"   df1 row: {row1.values}")
+            print(f"   df2 row: {matching_row_df2.values}")
