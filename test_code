@@ -17,9 +17,9 @@ for col in df1.columns:
     col_diffs = df1[col] != df2[col]
     if col_diffs.any():
         differences.append(f"Differences in column '{col}':")
-        for index, value in col_diffs.items():
+        for row_num, (index, value) in enumerate(col_diffs.items(), start=1):
             if value:
-                differences.append(f"  - Index {index}: {df1.at[index, col]} != {df2.at[index, col]}")
+                differences.append(f"  - Row {row_num}: {df1.at[index, col]} != {df2.at[index, col]}")
 
 # Print differences
 if differences:
