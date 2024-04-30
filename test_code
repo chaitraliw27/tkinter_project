@@ -1,13 +1,30 @@
 import pandas as pd
 
-# Assuming df1 and df2 are your DataFrames
-# Reset the index of both DataFrames
-df1.reset_index(drop=True, inplace=True)
-df2.reset_index(drop=True, inplace=True)
+# Example DataFrames
+df1 = pd.DataFrame({'name': ['John', 'Alice', 'Bob'],
+                    'BFN code': [123, 456, 789],
+                    'test': ['A', 'B', 'C']})
 
-# Compare the two DataFrames
-df_diff = df1.compare(df2)
+df2 = pd.DataFrame({'name': ['John', 'Alice', 'Bob'],
+                    'BFN code': [123, 459, 789],  # Introducing a difference
+                    'test': ['A', 'B', 'D']})     # Introducing a difference
 
-# Display the differences
-print("Differences between df1 and df2:")
-print(df_diff)
+# List to store differences
+differences = []
+
+# Iterate over columns and compare content
+for col in df1.columns:
+    col_diffs = df1[col] != df2[col]
+    if col_diffs.any():
+        differences.append(f"Differences in column '{col}':")
+        for index, value in col_diffs.items():
+            if value:
+                differences.append(f"  - Index {index}: {df1.at[index, col]} != {df2.at[index, col]}")
+
+# Print differences
+if differences:
+    print("Column-wise differences found:")
+    for diff in differences:
+        print(diff)
+else:
+    print("No column-wise differences found.")
