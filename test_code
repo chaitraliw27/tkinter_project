@@ -1,26 +1,23 @@
+import os
 import pandas as pd
 
-# Example DataFrames
-df1 = pd.DataFrame({'node_name': ['John', 'Alice', 'Bob'],
-                    'calendar': [2022, 2023, 2024],
-                    'value': [1, 2, 3]})
+# Folder containing CSV files
+folder_path = 'your_folder_path'
 
-df2 = pd.DataFrame({'node_name': ['John', 'Alice', 'Bob'],
-                    'calendar': [2022, 2024, 2024],  # Introducing a difference
-                    'value': [1, 2, 4]})            # Introducing a difference
+# Get a list of all files in the folder
+files = os.listdir(folder_path)
 
-# Create a key by combining 'node_name' and 'calendar' columns
-df1['key'] = df1['node_name'] + df1['calendar'].astype(str)
-df2['key'] = df2['node_name'] + df2['calendar'].astype(str)
+# Filter out only CSV files
+csv_files = [file for file in files if file.endswith('.csv')]
 
-# Iterate over rows of df1
-for index, row1 in df1.iterrows():
-    # Find matching row in df2 based on the key
-    matching_row_df2 = df2[df2['key'] == row1['key']]
-    if not matching_row_df2.empty:
-        matching_row_df2 = matching_row_df2.iloc[0]  # If multiple matches, take the first one
-        # Compare entire row content
-        if not row1.equals(matching_row_df2):
-            print(f"Difference found for key {row1['key']}:")
-            print(f"   df1 row: {row1.values}")
-            print(f"   df2 row: {matching_row_df2.values}")
+# Read each CSV file into a DataFrame
+dfs = []
+for file in csv_files:
+    file_path = os.path.join(folder_path, file)
+    df = pd.read_csv(file_path)
+    dfs.append(df)
+
+# Concatenate all DataFrames into a single DataFrame
+combined_df = pd.concat(dfs, ignore_index=True)
+
+# Now combined_df contains all the data from CSV files in the folder
