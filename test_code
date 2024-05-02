@@ -10,25 +10,7 @@ data = {
 
 df = pd.DataFrame(data)
 
-# Group by 'node_name' and sum the columns separately
-sum_of_A = df.groupby('node_name')['A'].sum().reset_index()
-sum_of_B = df.groupby('node_name')['B'].sum().reset_index()
-sum_of_C = df.groupby('node_name')['C'].sum().reset_index()
+# Group by 'node_name' and sum the values in column 'A' where the value is True, otherwise add zero
+sum_of_true_A = df.groupby('node_name')['A'].apply(lambda x: x[x == True].sum() if any(x == True) else 0).reset_index(name='sum_of_true_A')
 
-# Merge the results into a single DataFrame
-merged_df = pd.merge(sum_of_A, sum_of_B, on='node_name')
-merged_df = pd.merge(merged_df, sum_of_C, on='node_name')
-
-# Rename columns
-merged_df.columns = ['node_name', 'sum_of_A', 'sum_of_B', 'sum_of_C']
-
-# Add a new column 'BFN_node_name'
-merged_df['BFN_node_name'] = merged_df['node_name'].apply(lambda x: 'BFN_' + x)
-
-# Reorder columns
-merged_df = merged_df[['node_name', 'BFN_node_name', 'sum_of_A', 'sum_of_B', 'sum_of_C']]
-
-# Save to CSV
-merged_df.to_csv('sum_of_columns_with_BFN.csv', index=False)
-
-print(merged_df)
+print(sum_of_true_A)
