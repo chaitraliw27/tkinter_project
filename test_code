@@ -1,17 +1,22 @@
 import pandas as pd
 
-# Assuming df is your DataFrame created from the CSV
+from htmldiff import diff
 
-# Function to sort comma-separated values
-def sort_comma_sep_values(s):
-    # Split the string by comma, sort the resulting list, and join them back into a string
-    return ','.join(sorted(str(s).split(',')))
+# Convert DataFrames to HTML tables
+df1_html = df1.to_html()
+df2_html = df2.to_html()
 
-# Iterate through each column
-for col in df.columns:
-    # Check if the column contains comma-separated values
-    if df[col].apply(lambda x: ',' in str(x)).any():
-        # If yes, apply the sorting function to each cell in the column
-        df[col] = df[col].apply(sort_comma_sep_values)
+# Compute the difference between the HTML tables
+difference_html = diff(df1_html, df2_html)
 
-# Now your DataFrame contains sorted comma-separated values in columns where they were found
+# Print or display the difference
+print(difference_html)
+
+
+# Assuming you have already computed the difference_html using htmldiff
+
+# Create a DataFrame with a single row containing the HTML link
+df_links = pd.DataFrame({'Difference HTML Link': ['<a href="data:text/html;base64,' + difference_html + '">View Difference</a>']})
+
+# Save the DataFrame with the link to a CSV file
+df_links.to_csv('difference_links.csv', index=False)
