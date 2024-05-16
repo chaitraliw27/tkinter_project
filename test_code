@@ -10,11 +10,11 @@ df = pd.DataFrame({
 link_text = 'View Difference'
 url = 'diff.html'
 
-# Create clickable link in markdown syntax
-markdown_link = f'[{link_text}]({url})'
+# Create clickable link in plain text format
+text_link = f'=HYPERLINK("{url}", "{link_text}")'
 
 # Add the link as a new column in the DataFrame
-df['Difference Link'] = markdown_link
+df['Difference Link'] = text_link
 
-# Save DataFrame to CSV
-df.to_csv('output.csv', index=False)
+# Save DataFrame to Excel file
+df.to_excel('output.xlsx', index=False)
