@@ -1,4 +1,21 @@
-df.groupby('node_name')[['in jira','link']].apply(lambda x: pd.Series({
-    'abc': x['in jira'].sum(),
-    'link': x['link'].iloc[0]  # Get the link from the first row of the group
-}) if any(x['in jira']) else pd.Series({'abc': 0, 'link': x['link'].iloc[0]})).reset_index()
+import pandas as pd
+import difflib
+from IPython.display import HTML
+
+def html_diff(a, b):
+    differ = difflib.HtmlDiff()
+    return differ.make_table(a.splitlines(), b.splitlines())
+
+# Sample DataFrames
+df1 = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
+df2 = pd.DataFrame({'A': [1, 3, 3], 'B': [4, 6, 6]})
+
+# Convert DataFrames to string representations
+df1_str = df1.to_string(index=False)
+df2_str = df2.to_string(index=False)
+
+# Generate HTML diff
+html_difference = html_diff(df1_str, df2_str)
+
+# Display HTML diff
+HTML(html_difference)
