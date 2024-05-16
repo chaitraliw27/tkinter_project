@@ -1,10 +1,16 @@
-from IPython.display import HTML
 import pandas as pd
+from IPython.display import HTML
+from difflib import HtmlDiff
 
-# Assuming you have already computed the difference_html using htmldiff
+# Load the CSV files into pandas DataFrames
+df1 = pd.read_csv('file1.csv')
+df2 = pd.read_csv('file2.csv')
 
-# Create an HTML string containing the link
-html_link = '<a href="data:text/html;base64,' + difference_html + '">View Difference</a>'
+# Compute the difference between the DataFrames
+html_diff = HtmlDiff().make_file(df1.to_csv(index=False).splitlines(), df2.to_csv(index=False).splitlines())
+
+# Convert the HTML diff into a link
+html_link = '<a href="data:text/html;base64,' + html_diff.encode('base64').decode('utf-8') + '">View Difference</a>'
 
 # Display the HTML link
 HTML(html_link)
