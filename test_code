@@ -1,22 +1,10 @@
+from IPython.display import HTML
 import pandas as pd
-
-from htmldiff import diff
-
-# Convert DataFrames to HTML tables
-df1_html = df1.to_html()
-df2_html = df2.to_html()
-
-# Compute the difference between the HTML tables
-difference_html = diff(df1_html, df2_html)
-
-# Print or display the difference
-print(difference_html)
-
 
 # Assuming you have already computed the difference_html using htmldiff
 
-# Create a DataFrame with a single row containing the HTML link
-df_links = pd.DataFrame({'Difference HTML Link': ['<a href="data:text/html;base64,' + difference_html + '">View Difference</a>']})
+# Create an HTML string containing the link
+html_link = '<a href="data:text/html;base64,' + difference_html + '">View Difference</a>'
 
-# Save the DataFrame with the link to a CSV file
-df_links.to_csv('difference_links.csv', index=False)
+# Display the HTML link
+HTML(html_link)
