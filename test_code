@@ -1,37 +1,4 @@
-import pandas as pd
-from IPython.display import HTML
-from difflib import HtmlDiff
-
-# Load the CSV files into pandas DataFrames
-df1 = pd.read_csv('file1.csv')
-df2 = pd.read_csv('file2.csv')
-
-# Compute the difference between the DataFrames
-html_diff = HtmlDiff().make_file(df1.to_csv(index=False).splitlines(), df2.to_csv(index=False).splitlines())
-
-# Convert the HTML diff into a link
-html_link = '<a href="data:text/html;base64,' + html_diff.encode('base64').decode('utf-8') + '">View Difference</a>'
-
-# Display the HTML link
-HTML(html_link)
-
-import pandas as pd
-from IPython.display import HTML
-from difflib import HtmlDiff
-import codecs
-
-# Load the CSV files into pandas DataFrames
-df1 = pd.read_csv('file1.csv')
-df2 = pd.read_csv('file2.csv')
-
-# Compute the difference between the DataFrames
-html_diff = HtmlDiff().make_file(df1.to_csv(index=False).splitlines(), df2.to_csv(index=False).splitlines())
-
-# Convert the HTML diff into a link
-html_diff_bytes = html_diff.encode('utf-8')
-html_diff_base64 = codecs.encode(html_diff_bytes, 'base64').decode('utf-8')
-html_link = f'<a href="data:text/html;base64,{html_diff_base64}">View Difference</a>'
-
-# Display the HTML link
-HTML(html_link)
-
+df.groupby('node_name')[['in jira','link']].apply(lambda x: pd.Series({
+    'abc': x['in jira'].sum(),
+    'link': x['link'].iloc[0]  # Get the link from the first row of the group
+}) if any(x['in jira']) else pd.Series({'abc': 0, 'link': x['link'].iloc[0]})).reset_index()
