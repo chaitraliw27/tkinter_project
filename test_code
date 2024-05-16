@@ -14,3 +14,5 @@ df['Difference Link'] = html_link
 
 # Save DataFrame to CSV
 df.to_csv('output.csv', index=False)
+
+df.to_csv('output.csv', index=False, escapechar='\\', quoting=pd.QUOTE_NONE)
