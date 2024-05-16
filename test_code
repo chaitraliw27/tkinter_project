@@ -6,13 +6,15 @@ df = pd.DataFrame({
     'Column2': [4, 5, 6]
 })
 
-# Generate HTML link
-html_link = '<a href="diff.html">View Difference</a>'
+# Generate link
+link_text = 'View Difference'
+url = 'diff.html'
 
-# Add HTML link as a new column in the DataFrame
-df['Difference Link'] = html_link
+# Create clickable link in markdown syntax
+markdown_link = f'[{link_text}]({url})'
+
+# Add the link as a new column in the DataFrame
+df['Difference Link'] = markdown_link
 
 # Save DataFrame to CSV
 df.to_csv('output.csv', index=False)
-
-df.to_csv('output.csv', index=False, escapechar='\\', quoting=pd.QUOTE_NONE)
