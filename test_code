@@ -19,5 +19,18 @@ result = df.groupby('node_name').agg(
     Link=('Link', 'first')
 ).reset_index()
 
-# Display the result
+# Renaming columns
+result.rename(columns={
+    'node_name': 'NodeName',
+    'in_jira': 'InJira',
+    'in_prod': 'InProd',
+    'in_both': 'InBoth',
+    'Link': 'HTML_Link'
+}, inplace=True)
+
+# Adding a serial number column starting from 1
+result = result.reset_index()
+result = result.rename(columns={"index": "New_ID"})
+result['New_ID'] = result.index + 1
+
 print(result)
