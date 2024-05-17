@@ -1,20 +1,23 @@
 import pandas as pd
 
-# Sample DataFrame
-df = pd.DataFrame({
-    'Column1': [1, 2, 3],
-    'Column2': [4, 5, 6]
-})
+# Creating the initial DataFrame
+data = {
+    'node_name': ['BFN', 'BFN', 'Wholesale', 'Wholesale', 'Security', 'Security'],
+    'in_jira': [True, True, True, True, False, False],
+    'in_prod': [True, True, True, True, True, True],
+    'in_both': [True, True, False, False, False, False],
+    'Link': ['html link_BFN', 'html link_BFN', 'html link_Wholesale', 'html link_Wholesale', 'html link_Security', 'html link_Security']
+}
 
-# Generate link
-link_text = 'View Difference'
-url = 'diff.html'
+df = pd.DataFrame(data)
 
-# Create clickable link in plain text format
-text_link = f'=HYPERLINK("{url}", "{link_text}")'
+# Group by node_name and count the occurrences of True values
+result = df.groupby('node_name').agg(
+    in_jira=('in_jira', 'sum'),
+    in_prod=('in_prod', 'sum'),
+    in_both=('in_both', 'sum'),
+    Link=('Link', 'first')
+).reset_index()
 
-# Add the link as a new column in the DataFrame
-df['Difference Link'] = text_link
-
-# Save DataFrame to Excel file
-df.to_excel('output.xlsx', index=False)
+# Display the result
+print(result)
