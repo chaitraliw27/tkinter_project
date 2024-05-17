@@ -1,36 +1,73 @@
 import pandas as pd
+import difflib
+from openpyxl import Workbook
+import os
 
-# Creating the initial DataFrame
-data = {
-    'node_name': ['BFN', 'BFN', 'Wholesale', 'Wholesale', 'Security', 'Security'],
-    'in_jira': [True, True, True, True, False, False],
-    'in_prod': [True, True, True, True, True, True],
-    'in_both': [True, True, False, False, False, False],
-    'Link': ['html link_BFN', 'html link_BFN', 'html link_Wholesale', 'html link_Wholesale', 'html link_Security', 'html link_Security']
-}
+# Sample DataFrames
+data1 = {'node_name': ['BFN', 'Wholesale', 'Security'],
+         'in_jira': [2, 2, 0],
+         'in_prod': [2, 2, 2],
+         'in_both': [2, 0, 0]}
 
-df = pd.DataFrame(data)
+data2 = {'node_name': ['BFN', 'Wholesale', 'Security'],
+         'in_jira': [2, 2, 2],
+         'in_prod': [2, 2, 0],
+         'in_both': [2, 0, 0]}
 
-# Group by node_name and count the occurrences of True values
-result = df.groupby('node_name').agg(
-    in_jira=('in_jira', 'sum'),
-    in_prod=('in_prod', 'sum'),
-    in_both=('in_both', 'sum'),
-    Link=('Link', 'first')
-).reset_index()
+df1 = pd.DataFrame(data1)
+df2 = pd.DataFrame(data2)
 
-# Renaming columns
-result.rename(columns={
-    'node_name': 'NodeName',
-    'in_jira': 'InJira',
-    'in_prod': 'InProd',
-    'in_both': 'InBoth',
-    'Link': 'HTML_Link'
-}, inplace=True)
+# Function to compute differences and save as HTML file
+def compute_and_save_html_diff(row_idx, base_path="html_reports"):
+    from_list = df1.iloc[row_idx].astype(str).tolist()
+    to_list = df2.iloc[row_idx].astype(str).tolist()
+    html_diff = difflib.HtmlDiff().make_file(
+        from_list,
+        to_list,
+        context=True,
+        numlines=5
+    )
+    # Ensure the base path exists
+    if not os.path.exists(base_path):
+        os.makedirs(base_path)
+    # Define the HTML file path
+    html_file_path = os.path.join(base_path, f'diff_report_{row_idx}.html')
+    # Save the HTML content to a file
+    with open(html_file_path, 'w', encoding='utf-8') as f:
+        f.write(html_diff)
+    return html_file_path
 
-# Adding a serial number column starting from 1
-result = result.reset_index()
-result = result.rename(columns={"index": "New_ID"})
-result['New_ID'] = result.index + 1
+# Create an Excel workbook
+wb = Workbook()
+ws = wb.active
 
-print(result)
+# Add headers
+headers = list(df1.columns)
+headers.append('Link')
+ws.append(headers)
+
+# Add data rows with hyperlinks
+for idx, row in df1.iterrows():
+    # Add row data
+    row_data = list(row)
+    
+    # Compute HTML differences and save to file
+    html_file_path = compute_and_save_html_diff(idx)
+    
+    # Create the hyperlink (relative path for easier sharing)
+    # Assuming the base path is the current directory
+    relative_path = os.path.relpath(html_file_path, start=os.getcwd())
+    link = f'file:///{os.path.abspath(relative_path)}'
+    
+    # Add row data to the Excel sheet
+    for col_idx, value in enumerate(row_data, 1):
+        ws.cell(row=idx+2, column=col_idx).value = value
+
+    # Add hyperlink for viewing the differences
+    link_cell = ws.cell(row=idx+2, column=len(headers))
+    link_cell.hyperlink = link
+    link_cell.value = 'View HTML Report'
+    link_cell.style = "Hyperlink"
+
+# Save the Excel file
+wb.save('output.xlsx')
