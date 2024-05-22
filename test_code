@@ -1,29 +1,41 @@
-import pandas as pd
+import requests
+from requests.auth import HTTPBasicAuth
 
-# Sample DataFrame with missing and unordered columns
-data = {
-    'node_name': ['BFN', 'Wholesale', 'Security'],
-    'in_prod': [2, 2, 2],
-    'in_jira': [2, 2, 0]
-}
-df = pd.DataFrame(data)
+# Jira credentials
+jira_url = 'https://your-domain.atlassian.net'
+username = 'your-email@example.com'
+api_token = 'your-api-token'
 
-# Hardcoded column names in the desired order
-desired_columns = ['node_name', 'in_jira', 'in_prod', 'in_both']
+# Authentication
+auth = HTTPBasicAuth(username, api_token)
 
-# Function to ensure DataFrame has the desired columns in the correct order
-def ensure_columns(df, desired_columns):
-    # Add missing columns with empty values
-    for col in desired_columns:
-        if col not in df.columns:
-            df[col] = ''
-    
-    # Reorder columns to match the desired order
-    df = df[desired_columns]
-    return df
+# Issue key
+issue_key = 'PROJECT-123'
+issue_url = f'{jira_url}/rest/api/3/issue/{issue_key}'
 
-# Apply the function to the DataFrame
-df = ensure_columns(df, desired_columns)
+# Fetch issue details
+response = requests.get(issue_url, auth=auth)
+issue_data = response.json()
 
-# Display the modified DataFrame
-print(df)
+# Check for CSV attachments
+attachments = issue_data['fields']['attachment']
+csv_attachment = None
+
+for attachment in attachments:
+    if attachment['filename'].endswith('.csv'):
+        csv_attachment = attachment
+        break
+
+if not csv_attachment:
+    print("No CSV attachment found.")
+else:
+    print(f"Found CSV attachment: {csv_attachment['filename']}")
+
+    # Download the CSV attachment
+    csv_url = csv_attachment['content']
+    csv_response = requests.get(csv_url, auth=auth)
+
+    with open(csv_attachment['filename'], 'wb') as f:
+        f.write(csv_response.content)
+
+    print(f"Downloaded CSV file: {csv_attachment['filename']}")
